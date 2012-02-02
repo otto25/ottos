@@ -62,7 +62,32 @@ typedef struct message_t {
     void* content;  /* the actual message content                   */
 } message_t;
 
+/*
+ * process information struct
+ */
+#define PINFO_MAX_CMD_LENGTH 100
+typedef struct pinfo_t {
+    pid_t pid;            /* process pid */
+    pid_t parent;
+    int tty;              /* tty identifier */
+    int stat;             /* process status (running, ) */
+    int prio;             /* process priority */
+    uint64_t time;        /* uptime of process */
+    double mem;           /* memory consumed by process */
+    char cmd[PINFO_MAX_CMD_LENGTH];  /* command line pattern to start process */
+} pinfo_t;
+
+typedef struct meminfo_t {
+    double used_intram;
+    double used_extddr;
+    double total_intram;
+    double total_extddr;
+} meminfo_t;
+
+
 typedef struct {
+    int year;
+    int month;
     int days;
     int hours;
     int minutes;
@@ -73,5 +98,22 @@ typedef struct {
 typedef enum system_file_type {
 	DEVICE_FILE, NON_DEVICE_FILE
 } system_file_type_t;
+
+typedef struct {
+  uint32_t sector;
+  uint32_t cluster;
+  uint8_t  offset;
+} dir_t;
+
+#ifndef FATFS_MAX_LONG_FILENAME
+#  define FATFS_MAX_LONG_FILENAME 260
+#endif
+
+typedef struct {
+  char     filename[FATFS_MAX_LONG_FILENAME];
+  uint8_t  is_dir;
+  uint32_t cluster;
+  uint32_t size;
+} dir_entry_t;
 
 #endif /* OTTOS_TYPES_H_ */

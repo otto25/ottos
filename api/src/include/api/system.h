@@ -32,6 +32,12 @@
 
 #define SYSTEM_SERIAL_0_PATH SYSTEM_DEV_PATH "/serial0"
 
+#define SYSTEM_TEMP_0_PATH SYSTEM_DEV_PATH "/temp0"
+#define SYSTEM_PRESSURE_0_PATH SYSTEM_DEV_PATH "/pressure0"
+#define SYSTEM_SOLAR_0_PATH SYSTEM_DEV_PATH "/solar0"
+
+#define SYSTEM_RTC_0_PATH SYSTEM_DEV_PATH "/rtc0"
+
 #define SYSTEM_LED_0_PATH SYSTEM_DEV_PATH "/led0"
 #define SYSTEM_LED_1_PATH SYSTEM_DEV_PATH "/led1"
 
@@ -48,7 +54,11 @@ EXTERN int sys_close(int fd);
 
 EXTERN unsigned int sys_physical_address_of(const void* address);
 
-EXTERN int sys_execute(int priority, BOOLEAN block_current, const char* path);
+EXTERN int sys_execute(int priority, BOOLEAN block_current, const char* path, int argc, char** argv);
+
+EXTERN unsigned int sys_pcount();
+
+EXTERN int sys_pinfo(pinfo_t* mem, int count);
 /**
  * IPC system calls
  */
@@ -78,5 +88,43 @@ EXTERN void sys_wait_msg(const char* ns);
  * @param success - output parameter if the the method succeeded
  */
 EXTERN void sys_receive(const char* ns, message_t* msg, int* success);
+
+/*
+ * Reads the arguments of a process and returns the arguments
+ * @param argc - the read argument count
+ */
+EXTERN char** sys_read_arguments(int* argc);
+
+/*
+ * Deletes the active process (the caller)
+ */
+EXTERN void sys_exit(int state);
+
+/**
+ * Open a directory for listing files.
+ *
+ * @param path - the path to be opened
+ * @param dir - the reference to the directory status struct
+ */
+EXTERN int sys_opendir(const char* path, dir_t* dir);
+
+/**
+ * Close a directory after reading.
+ *
+ * @param dir_stat - the directory to close
+ */
+EXTERN int sys_closedir(dir_t* dir_stat);
+
+/**
+ * Read the next directory entry in a previously opened directory.
+ * @param dir_stat - the reference to the opened directory
+ * @param dir_entry - the reference of the entry in which to read
+ */
+EXTERN int sys_readdir(dir_t* dir_stat, dir_entry_t* dir_entry);
+
+/**
+ * Returns the curren time
+ */
+EXTERN time_t sys_get_time();
 
 #endif /* API_SYSTEM_H_ */

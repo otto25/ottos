@@ -27,9 +27,12 @@
 /*
  * Process system calls
  */
-#define SYS_YIELD   1
-#define SYS_EXIT    2
-#define SYS_EXEC	  3
+#define SYS_YIELD             1
+#define SYS_EXIT              2
+#define SYS_EXEC	            3
+#define SYS_NR_OF_PROCESS     4
+#define SYS_PHYSICAL_ADDRESS  5
+#define SYS_PROCESS_INFO      6
 
 /**
  * I/O system calls
@@ -39,12 +42,16 @@
 #define SYS_READ    12
 #define SYS_WRITE   13
 
-#define SYS_PHYSICAL_ADDRESS 14
+
 
 /**
  * File system calls
  */
-#define SYS_FOPEN   20
+#define SYS_FOPEN    20
+// directory operations
+#define SYS_DIROPEN  21
+#define SYS_DIRCLOSE 22
+#define SYS_DIRREAD  23
 
 /*
  * IPC system calls
@@ -53,5 +60,18 @@
 #define SYS_SEND            31
 #define SYS_WAIT_MSG        32
 #define SYS_RECEIVE         33
+
+/**
+ * WTF system calls
+ */
+#define SYS_ARGS_COUNT        40
+#define SYS_ARGS_VALUE_LENGTH 41
+#define SYS_ARGS_VALUE        42
+#define SYS_ARGS_FREE         43
+
+/*
+ * MEMORY system calls
+ */
+#define SYS_MEMORY_INFO 50
 
 #endif /* SYSCALLS_H_ */

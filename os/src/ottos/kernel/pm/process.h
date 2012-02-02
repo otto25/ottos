@@ -36,10 +36,14 @@
 #define PROCESS_STACK_SIZE  0x00002000
 
 #define PROCESS_SYSMEM_START 0x10002000
-#define PROCESS_SYSMEM_SIZE 0x00002000
+#define PROCESS_SYSMEM_SIZE 0x00004000
 
 enum ProcessState {
   READY, BLOCKED, RUNNING
+};
+
+enum BlockState {
+  NONE, IPC_WAIT
 };
 
 // TODO find a better name for this
@@ -52,9 +56,6 @@ struct process_file_descriptor {
     process_file_descriptor_t* next;
 };
 
-enum BlockState {
-  NONE, IPC_WAIT
-};
 
 typedef struct {
     int CPSR;
@@ -84,6 +85,9 @@ struct process {
     address code_location;
     int page_count;
 
+    const char* cmd; /* the command line for this process (proc name)*/
+    uint64_t starttime;
+
     pid_t pid;
     int priority;
     enum ProcessState state;
@@ -94,6 +98,9 @@ struct process {
 
     process_t* child;
     process_t* parent;
+
+    int argc;
+    char** argv;
 };
 
 // the process table contains all processes of the
@@ -107,25 +114,25 @@ EXTERN int process_next_free_entry;
 EXTERN int process_active;
 
 // initializes the process table with NULL values
-void process_table_init();
+EXTERN void process_table_init();
 
 // creates a new process and returns the pid of it
-pid_t process_create(int priority, code_bytes_t* code_bytes);
+pid_t process_create(int priority, code_bytes_t* code_bytes, const char* cmd, int argc, char** argv);
 
 // deletes the active process
-void process_delete();
+EXTERN void process_delete();
 
 // returns the process file descriptor for the given file descriptor id
-process_file_descriptor_t* process_get_file_descriptor(int fd);
+EXTERN process_file_descriptor_t* process_get_file_descriptor(int fd);
 
 // creates a new process file descriptor and returns it
-process_file_descriptor_t* process_add_device_descriptor(int fd);
+EXTERN process_file_descriptor_t* process_add_device_descriptor(int fd);
 
 // creates a new process file descriptor and returns it
-process_file_descriptor_t* process_add_file_descriptor(void* file);
+EXTERN process_file_descriptor_t* process_add_file_descriptor(void* file);
 
 // removes the process file descriptor for the given file descriptor id
-void process_remove_file_descriptor(int fd);
+EXTERN void process_remove_file_descriptor(int fd);
 
 // returns the current process pid
 EXTERN pid_t process_pid();
@@ -135,5 +142,10 @@ EXTERN void process_block(pid_t pid);
 
 // sets the process to READY state and blockstate to NONE
 EXTERN void process_unblock(pid_t pid);
+
+EXTERN int process_count();
+
+// returns the number of actual read pinfo_ts
+EXTERN unsigned int process_pinfo(pinfo_t pinfo[], int count);
 
 #endif /* OTTOS_KERNEL_PM_PROCESS_H_ */

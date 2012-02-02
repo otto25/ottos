@@ -21,11 +21,14 @@
  *      Author: Franziskus Domig <fdomig@gmail.com>
  */
 
+#include <stdlib.h>
+
 #include <ottos/memory.h>
 #include <ottos/types.h>
 #include <ottos/kernel.h>
 #include <ottos/io.h>
-#include <stdlib.h>
+
+#include "ram_manager/ram_manager.h"
 
 void* memory_init_32(void* buffer, size_t length, uint32_t value) {
   do {
@@ -62,5 +65,29 @@ void memory_print(uint8_t* memory, size_t size) {
   sprintf(p_buffer, "\n");
   sprintf(p_buffer, "\0");
   kernel_print(buffer);
+  free(buffer);
 }
 
+void memory_info(meminfo_t* info) {
+  info->total_extddr = ram_manager_mem_total_extddr();
+  info->total_intram = ram_manager_mem_total_intram();
+  info->used_intram = ram_manager_mem_alloc_intram();
+  info->used_extddr = ram_manager_mem_alloc_extddr();
+}
+
+char* memory_bytes_readable(double bytes, char* buffer) {
+    const char* suffix[] = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+    int i = 0, c = 0;
+    while (bytes > 1024 && i < 7) {
+        bytes /= 1024;
+        i++;
+    }
+
+    if (((double)(bytes - (int) bytes)) > 0.009
+        || ((double)(bytes - (int) bytes)) < -0.009) {
+      c = 2;
+    }
+
+    sprintf(buffer, "%.*f%s", c, bytes, suffix[i]);
+    return buffer;
+}
